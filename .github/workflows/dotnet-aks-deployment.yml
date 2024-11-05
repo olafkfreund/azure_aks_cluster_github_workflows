@@ -1,9 +1,10 @@
 name: Build and Deploy to AKS
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   build:
@@ -47,3 +48,11 @@ jobs:
       run: |
         kubectl apply -f deployment.yml
         kubectl rollout status deployment/aspnet-core-deployment
+    
+    - name: Install Test Dependencies
+      run: |
+        pip install pytest kubernetes requests
+  
+    - name: Run Integration Tests
+      run: |
+        pytest ./test/integration_tests.py -v

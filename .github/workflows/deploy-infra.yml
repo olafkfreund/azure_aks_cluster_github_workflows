@@ -1,8 +1,8 @@
 name: Deploy AKS Cluster Infra
 on:
-  pull_request:
-    branches:
-      - main
+  # pull_request:
+  #   branches:
+  #     - main
   workflow_dispatch:
 
 permissions:
@@ -183,38 +183,27 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve "./main.tfplan"
 
-  terraform-destroy:
-    needs: terraform-apply
-    name: Terraform Destroy
-    runs-on: ubuntu-latest
-    environment: destroy
-    defaults:
-      run:
-        working-directory: ./cluster-deployment
-
-    steps:
-      - name: Azure login
-        uses: azure/login@v2
+      - name: Get AKS Credentials
+        uses: azure/aks-set-context@v3
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          
-      - name: Checkout code
-        uses: actions/checkout@v2
+          resource-group: ${{ secrets.RESOURCE_GROUP }}
+          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Init
-        id: init
-        run: terraform init -backend-config="resource_group_name=${{secrets.BACKEND_AZURE_RESOURCE_GROUP_NAME}}" -backend-config="storage_account_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_NAME}}" -backend-config="container_name=${{secrets.BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME}}"
-
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
+      - name: Install Helm
+        uses: azure/setup-helm@v3
         with:
-          name: tfplan
-          path: ./cluster-deployment
+          version: 'latest'
 
-      - name: Terraform Apply
-        run: terraform destroy -auto-approve
+      - name: Install NGINX Ingress
+        run: |
+          helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+          helm repo update
+          helm install nginx-ingress ingress-nginx/ingress-nginx \
+            --create-namespace \
+            --namespace ingress-basic
+      
+      - name: Install Cert Manager
+        run: |
+          kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+          kubectl wait --for=condition=available --timeout=600s deployment/cert-manager -n cert-manager
+          kubectl apply -f ./k8s/cluster-issuer.yaml
