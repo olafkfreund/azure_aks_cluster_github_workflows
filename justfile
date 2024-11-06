@@ -2,11 +2,11 @@
 
 # Variables
 set dotenv-load
-registry := "myacr.azurecr.io"
-aks_name := "my-aks-cluster"
-rg := "my-resource-group"
+registry := "devacrfcaks.azurecr.io"
+aks_name := "dev-fcaks"
+rg := "rg-fc-aks"
 
-# Azure Login and Setup
+
 login:
     az login
     az account set --subscription $SUBSCRIPTION_ID
@@ -14,7 +14,7 @@ login:
 aks-credentials:
     az aks get-credentials --resource-group {{rg}} --name {{aks_name}}
 
-# Docker Build and Push
+
 docker-build:
     docker build -t {{registry}}/backend:latest ./apps/springboot/backend
     docker build -t {{registry}}/frontend:latest ./apps/springboot/frontend
@@ -24,14 +24,14 @@ docker-push:
     docker push {{registry}}/backend:latest
     docker push {{registry}}/frontend:latest
 
-# Kubernetes Deployments
+
 k8s-deploy:
     kubectl apply -f ./apps/springboot/backend/backend-deployment.yaml
     kubectl apply -f ./apps/springboot/frontend/frontend-deployment.yaml
     kubectl apply -f ./apps/dotnet/aspnet-core-dotnet-core/dotnet-deployment.yaml
     kubectl apply -f ./apps/dotnet/aspnet-core-dotnet-core/ingress.yaml
 
-# Add to justfile
+
 install-nginx-ingress:
     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
     helm repo update
@@ -39,7 +39,6 @@ install-nginx-ingress:
         --create-namespace \
         --namespace ingress-basic
 
-# Resource Management
 get-pods:
     kubectl get pods -A
 
@@ -49,23 +48,42 @@ get-services:
 get-deployments:
     kubectl get deployments -A
 
-# Infrastructure Management
-tf-init:
-    cd terraform && terraform init
+#GitHub Deployment
+gh-tf-init:
+    cd ./github-deployment/ && terraform init
 
-tf-plan:
-    cd terraform && terraform plan
+gh-tf-plan:
+    cd ./github-deployment/ && terraform plan
 
-tf-apply:
-    cd terraform && terraform apply -auto-approve
+gh-tf-apply:
+    cd ./github-deployment/ && terraform apply -auto-approve
 
-tf-destroy:
-    cd terraform && terraform destroy -auto-approve
+gh-tf-test:
+    cd ./github-deployment/ && terraform test -verbose
 
-# Complete deployment pipeline
+gh-tf-destroy:
+    cd ./github-deployment/ && terraform destroy -auto-approve
+
+#Azure infra  Deployment
+cs-tf-init:
+    cd ./cluster-deployment/ && terraform init
+
+cs-tf-plan:
+    cd ./cluster-deployment/ && terraform plan
+
+cs-tf-apply:
+    cd ./cluster-deployment/ && terraform apply -auto-approve
+
+cs-tf-test:
+    cd ./cluster-deployment/ && terraform test -verbose
+
+cs-tf-destroy:
+    cd ./cluster-deployment/ && terraform destroy -auto-approve
+
+
 deploy: login aks-credentials docker-build docker-push k8s-deploy
 
-# Cleanup
+
 cleanup:
     kubectl delete -f k8s/
     az group delete --name {{rg}} --yes --no-wait

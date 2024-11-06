@@ -5,6 +5,10 @@ module.exports = {
   entry: './src/main/js/app.js',
   devtool: 'source-map',
   mode: 'development',
+  experiments: {
+    asyncWebAssembly: true,
+    syncWebAssembly: true
+  },
   resolve: {
     alias: {
       'stompjs': path.resolve(__dirname, 'node_modules/stompjs/lib/stomp.js'),
@@ -20,7 +24,9 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        use: ['babel-loader'],
+        test: /\.wasm$/,
+        type: "webassembly/async"
       }
     ]
   },

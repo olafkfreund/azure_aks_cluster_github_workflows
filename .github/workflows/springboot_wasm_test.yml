@@ -1,0 +1,73 @@
+name: WebAssembly Springboot Frontend Tests
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  wasm-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./apps/springboot/frontend
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+          cache-dependency-path: './apps/springboot/frontend/package.json'
+
+      - name: Install Emscripten
+        uses: mymindstorm/setup-emsdk@v12
+        with:
+          version: '3.1.45'
+          actions-cache-folder: 'emsdk-cache'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build WebAssembly
+        run: |
+          mkdir -p src/wasm
+          emcc src/wasm/main.cpp -o src/wasm/main.js \
+            -s WASM=1 \
+            -s EXPORTED_FUNCTIONS='["_add"]' \
+            -s EXPORTED_RUNTIME_METHODS='["ccall", "cwrap"]'
+
+      - name: Run WASM tests
+        run: |
+          npm install -D jest
+          npm test -- --testPathPattern=.*\.wasm\.test\.js$
+
+      - name: Upload WASM test results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: wasm-test-results
+          path: ./apps/springboot/frontend/coverage/
+          retention-days: 30
+
+  notify:
+    needs: wasm-test
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Notify on failure
+        if: ${{ needs.wasm-test.result == 'failure' }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const issue = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'WASM Tests Failed',
+              body: 'WebAssembly tests failed in the latest run. Please check the workflow logs.'
+            });

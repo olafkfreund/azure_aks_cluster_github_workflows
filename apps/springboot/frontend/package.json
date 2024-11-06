@@ -11,7 +11,8 @@
   },
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
-    "build": "webpack --mode production"
+    "build": "webpack --mode production",
+    "test:wasm": "jest --config jest.wasm.config.js"
   },
   "devDependencies": {
     "@babel/core": "^7.1.0",
@@ -21,5 +22,12 @@
     "webpack": "^4.19.1",
     "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.14"
+  },
+  "jest": {
+    "moduleFileExtensions": ["js", "jsx", "wasm"],
+    "testRegex": ".*\\.wasm\\.test\\.js$",
+    "transform": {
+      "^.+\\.(js|jsx)$": "babel-jest"
+    }
   }
 }

@@ -16,6 +16,7 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
+          distribution: 'temurin'  # Popular distribution of OpenJDK
           java-version: '17'  # Use your Java version
 
       - name: Set up Node.js
@@ -53,7 +54,6 @@ jobs:
       - name: Set AKS context
         uses: azure/aks-set-context@v2
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
           resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
 

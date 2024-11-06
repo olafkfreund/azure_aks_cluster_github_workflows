@@ -1,0 +1,45 @@
+# .github/workflows/terraform-test.yml
+name: Terraform Test
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  terraform-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: '1.5.0'
+
+    - name: Azure Login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Terraform Init GitHub
+      run: |
+        cd ./github-deployment/
+        terraform init
+
+    - name: Run Terraform Tests GitHub
+      run: |
+        cd ./github-deployment/
+        terraform test -verbose
+        
+    - name: Report Test Results
+      if: always()
+      uses: dorny/test-reporter@v1
+      with:
+        name: Terraform Tests
+        path: "**/TestResults/*.xml"
+        reporter: java-junit
