@@ -1,4 +1,4 @@
-name: Deploy AKS Cluster Infra
+name: Destroy AKS Cluster Infra
 on:
   # pull_request:
   #   branches:

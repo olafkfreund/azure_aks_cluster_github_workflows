@@ -1,5 +1,5 @@
 # .github/workflows/terraform-test.yml
-name: Terraform Test
+name: Cluster Infra Terraform Test
 
 on:
   # pull_request:
