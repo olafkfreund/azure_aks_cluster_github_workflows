@@ -43,3 +43,4 @@ terraform.rc
 .envrc
 state
 target/*
+node_modules/
