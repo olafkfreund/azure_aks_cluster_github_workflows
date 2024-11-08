@@ -4,7 +4,9 @@ on:
   workflow_dispatch:
   # push:
   #   branches: [ main ]  # Adjust branch as needed
-
+permissions:
+  id-token: write
+  contents: read
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
