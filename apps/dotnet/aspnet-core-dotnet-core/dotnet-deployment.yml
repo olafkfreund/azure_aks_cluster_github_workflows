@@ -1,0 +1,79 @@
+# deployment-combined.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aspnet-core-deployment
+  labels:
+    app: aspnet-core
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: aspnet-core
+  template:
+    metadata:
+      labels:
+        app: aspnet-core
+    spec:
+      containers:
+      - name: aspnet-core-container
+        image: ${{ secrets.ACR_LOGIN_SERVER }}/aspnet-core-dotnet-core:latest
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        command: ["dotnet", "aspnet-core-dotnet-core.dll"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aspnet-core-service
+  labels:
+    app: aspnet-core
+spec:
+  type: LoadBalancer
+  selector:
+    app: aspnet-core
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dotnet-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+    - hosts:
+      - ${{ secrets.domain }}
+      secretName: your-tls-secret
+  rules:
+  - http:
+      paths:
+      - path: /api(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 8080
+      - path: /(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 80
