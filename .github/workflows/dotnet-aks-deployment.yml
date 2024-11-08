@@ -27,7 +27,7 @@ jobs:
         password: ${{ secrets.ACR_PASSWORD }}
 
     - name: Build and push Docker image
-      working-directory: apps/dotnet
+      working-directory: apps/dotnet/aspnet-core-dotnet-core
       run: |
         docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/aspnet-core-dotnet-core:latest .
         docker push ${{ secrets.ACR_LOGIN_SERVER }}/aspnet-core-dotnet-core:latest
@@ -59,7 +59,7 @@ jobs:
         cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
     - name: Deploy to AKS
-      working-directory: apps/dotnet/apsnet-core-dotnet-core
+      working-directory: apps/dotnet/aspnet-core-dotnet-core
       run: |
         kubectl apply -f dotnet-deployment.yml
         kubectl rollout status deployment/aspnet-core-deployment
