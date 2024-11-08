@@ -1,4 +1,4 @@
-name: Build and Deploy to AKS
+name: Build and Deploy Dotnet Application to AKS
 
 on:
   workflow_dispatch:
