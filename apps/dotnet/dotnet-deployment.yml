@@ -53,7 +53,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt
 spec:
   tls:
@@ -63,17 +63,10 @@ spec:
   rules:
   - http:
       paths:
-      - path: /api(/|$)(.*)
+      - path: /
         pathType: Prefix
         backend:
           service:
-            name: backend-service
-            port:
-              number: 8080
-      - path: /(.*)
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend-service
+            name: aspnet-core-service
             port:
               number: 80

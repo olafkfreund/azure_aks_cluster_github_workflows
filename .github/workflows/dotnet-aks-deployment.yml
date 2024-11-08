@@ -59,7 +59,7 @@ jobs:
         cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
 
     - name: Deploy to AKS
-      working-directory: apps/dotnet
+      working-directory: apps/dotnet/apsnet-core-dotnet-core
       run: |
         kubectl apply -f dotnet-deployment.yml
         kubectl rollout status deployment/aspnet-core-deployment
