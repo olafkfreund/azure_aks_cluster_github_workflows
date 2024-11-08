@@ -24,7 +24,7 @@ variable "acr_name" {
 variable "admin_enabled" {
   description = "Enable admin user for the Azure Container Registry"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "sku" {

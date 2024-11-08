@@ -9,9 +9,9 @@
     "just@latest",
     "gh@latest",
     "k9s@latest",
-    "npm@latest",
     "maven@latest",
-    "node@latest"
+    "mysql80@latest",
+    "minikube@latest"
   ],
   "shell": {
     "init_hook": [

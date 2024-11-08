@@ -175,4 +175,5 @@ jobs:
         run: |
           kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
           kubectl wait --for=condition=available --timeout=600s deployment/cert-manager -n cert-manager
+          sleep 20
           kubectl apply -f ./k8s/cluster-issuer.yaml

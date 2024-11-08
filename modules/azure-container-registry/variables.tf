@@ -20,6 +20,7 @@ variable "sku" {
 
 variable "admin_enabled" {
   description = "Enable admin user for the Container Registry"
+  default = true
   type = bool
 }
 

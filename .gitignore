@@ -39,4 +39,6 @@ terraform.rc
 
 
 .vscode/
-.env
+.env*
+.envrc
+state
