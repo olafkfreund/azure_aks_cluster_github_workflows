@@ -5,9 +5,9 @@
   "dependencies": {
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "rest": "^1.3.1",
     "sockjs-client": "^1.0.3",
-    "stompjs": "^2.3.3",
-    "rest": "^1.3.1"
+    "stompjs": "^2.3.3"
   },
   "scripts": {
     "start": "webpack-dev-server --mode development --open",
@@ -19,12 +19,16 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.2",
-    "webpack": "^4.19.1",
+    "webpack": "^5.96.1",
     "webpack-cli": "^3.1.0",
-    "webpack-dev-server": "^3.1.14"
+    "webpack-dev-server": "^5.1.0"
   },
   "jest": {
-    "moduleFileExtensions": ["js", "jsx", "wasm"],
+    "moduleFileExtensions": [
+      "js",
+      "jsx",
+      "wasm"
+    ],
     "testRegex": ".*\\.wasm\\.test\\.js$",
     "transform": {
       "^.+\\.(js|jsx)$": "babel-jest"

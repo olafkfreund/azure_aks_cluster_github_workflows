@@ -31,7 +31,7 @@ jobs:
       - name: Build Frontend
         working-directory: apps/springboot/frontend
         run: |
-          npm install
+          npm install --force
           npm run build
 
       - name: Azure Login
