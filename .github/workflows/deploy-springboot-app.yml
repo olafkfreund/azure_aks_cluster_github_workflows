@@ -75,6 +75,7 @@ jobs:
           resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
 
       - name: Deploy to AKS
+        working-directory: apps/springboot
         run: |
-          kubectl set image deployment/apps/springboot/backend-deployment apps/springboot/backend=${{ secrets.ACR_LOGIN_SERVER }}/apps/springboot/backend:${{ github.sha }}
-          kubectl set image deployment/frontend-deployment frontend=${{ secrets.ACR_LOGIN_SERVER }}/frontend:${{ github.sha }}
+          kubectl apply -f backend/backend-deployment.yaml
+          kubectl apply -f frontend/frontend-deployment.yaml

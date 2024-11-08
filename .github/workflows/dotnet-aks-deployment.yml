@@ -61,7 +61,7 @@ jobs:
     - name: Deploy to AKS
       working-directory: apps/dotnet
       run: |
-        kubectl apply -f deployment.yml
+        kubectl apply -f dotnet-deployment.yml
         kubectl rollout status deployment/aspnet-core-deployment
     
     - name: Install Test Dependencies

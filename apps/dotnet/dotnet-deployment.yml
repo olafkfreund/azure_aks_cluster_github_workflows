@@ -58,7 +58,7 @@ metadata:
 spec:
   tls:
     - hosts:
-      - ${{ secrets.domain }}
+      - ${{ secrets.DOMAIN }}
       secretName: your-tls-secret
   rules:
   - http:
