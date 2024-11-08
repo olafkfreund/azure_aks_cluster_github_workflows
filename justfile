@@ -53,7 +53,7 @@ gh-tf-init:
     cd ./github-deployment/ && terraform init
 
 gh-tf-plan:
-    cd ./github-deployment/ && terraform plan
+    cd ./github-deployment/ && terraform plan -var-file=tfvars/terraform.tfvars -out=tfplan
 
 gh-tf-apply:
     cd ./github-deployment/ && terraform apply -auto-approve
@@ -69,7 +69,7 @@ cs-tf-init:
     cd ./cluster-deployment/ && terraform init
 
 cs-tf-plan:
-    cd ./cluster-deployment/ && terraform plan
+    cd ./cluster-deployment/ && terraform plan -var-file=tfvars/terraform.tfvars -out=tfplan
 
 cs-tf-apply:
     cd ./cluster-deployment/ && terraform apply -auto-approve

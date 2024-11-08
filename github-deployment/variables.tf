@@ -27,7 +27,7 @@ variable "github_organization_target" {
 
 variable "github_repository" {
   type        = string
-  default     = "aks_cluster_deployment"
+  default     = "azure_aks_cluster_github_workflows"
   description = "The name of the GitHub repository to target"
 }
 
@@ -50,7 +50,7 @@ variable "account_tier" {
 variable "account_replication_type" {
   type        = string
   description = "The Replication Type to use for this storage account"
-  default     = "GRS"
+  default     = "LRS"
 }
 
 variable "container_name" {
