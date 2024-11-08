@@ -12,6 +12,18 @@ spec:
     matchLabels:
       app: aspnet-core
   template:
+    readinessProbe:
+      httpGet:
+      path: /health
+      port: 80
+      initialDelaySeconds: 5
+      periodSeconds: 10
+    livenessProbe:
+      httpGet:
+      path: /health
+      port: 80
+      initialDelaySeconds: 15
+      periodSeconds: 20
     metadata:
       labels:
         app: aspnet-core

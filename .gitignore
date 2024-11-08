@@ -44,3 +44,4 @@ terraform.rc
 state
 target/*
 node_modules/
+target/
