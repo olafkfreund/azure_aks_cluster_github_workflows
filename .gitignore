@@ -39,3 +39,4 @@ terraform.rc
 
 
 .vscode/
+.env
