@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ${{ secrets.ACR_LOGIN_SERVER }}/backend:latest>
+          image: devacrfcaks.azurecr.io/backend:latest>
           ports:
             - containerPort: 8080
           resources:
