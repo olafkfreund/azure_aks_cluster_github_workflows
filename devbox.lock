@@ -342,6 +342,109 @@
         }
       }
     },
+    "nodePackages.webpack-cli@4.9.2": {
+      "last_modified": "2022-02-09T15:24:27Z",
+      "resolved": "github:NixOS/nixpkgs/98bb5b77c8c6666824a4c13d23befa1e07210ef1#nodePackages.webpack-cli",
+      "source": "devbox-search",
+      "version": "4.9.2",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/lgcjvpcv6nxlq3zwf9iig1hrhls05v90-webpack-cli-4.9.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/lgcjvpcv6nxlq3zwf9iig1hrhls05v90-webpack-cli-4.9.2"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/f6dfcfwr6df22nlrxy6k9ch9abflv69b-webpack-cli-4.9.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/f6dfcfwr6df22nlrxy6k9ch9abflv69b-webpack-cli-4.9.2"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/84p0fsm4sxkbv32lb44yrs8pnqk7zw19-webpack-cli-4.9.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/84p0fsm4sxkbv32lb44yrs8pnqk7zw19-webpack-cli-4.9.2"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/8lsh69hiivq85fjm2r1pglr0zn8gxm2x-webpack-cli-4.9.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/8lsh69hiivq85fjm2r1pglr0zn8gxm2x-webpack-cli-4.9.2"
+        }
+      }
+    },
+    "nodePackages.webpack@5.68.0": {
+      "last_modified": "2022-02-09T15:24:27Z",
+      "resolved": "github:NixOS/nixpkgs/98bb5b77c8c6666824a4c13d23befa1e07210ef1#nodePackages.webpack",
+      "source": "devbox-search",
+      "version": "5.68.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/d6plhdb8m80dk3az5kgyqvk20xhknp0j-webpack-5.68.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/d6plhdb8m80dk3az5kgyqvk20xhknp0j-webpack-5.68.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/c8x2rzzyh3vicdpzp9x1jxm1q5prwm1v-webpack-5.68.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/c8x2rzzyh3vicdpzp9x1jxm1q5prwm1v-webpack-5.68.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/x4dsjwnhck30dbbgd1c0z2yc0rfyfs08-webpack-5.68.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/x4dsjwnhck30dbbgd1c0z2yc0rfyfs08-webpack-5.68.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/h1wdxlj6yv6qr38wsfhpl2x5qcac0cfd-webpack-5.68.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/h1wdxlj6yv6qr38wsfhpl2x5qcac0cfd-webpack-5.68.0"
+        }
+      }
+    },
+    "nodejs@12.18.0": {
+      "last_modified": "2020-06-18T07:06:33Z",
+      "plugin_version": "0.0.2",
+      "resolved": "github:NixOS/nixpkgs/9480bae337095fd24f61380bce3174fdfe926a00#nodejs",
+      "source": "devbox-search",
+      "version": "12.18.0"
+    },
     "teller@latest": {
       "last_modified": "2024-11-03T14:18:04Z",
       "resolved": "github:NixOS/nixpkgs/4ae2e647537bcdbb82265469442713d066675275#teller",
