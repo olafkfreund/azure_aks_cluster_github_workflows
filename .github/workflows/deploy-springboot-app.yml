@@ -60,13 +60,13 @@ jobs:
 
       - name: Build and Push Backend Image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/apps/springboot/backend:${{ github.sha }} ./apps/springboot/backend
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/apps/springboot/backend:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/backend:${{ github.sha }} ./apps/springboot/backend
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/backend:${{ github.sha }}
 
       - name: Build and Push Frontend Image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/apps/springboot/frontend:${{ github.sha }} ./apps/springboot/frontend
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/apps/springboot/frontend:${{ github.sha }}
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/frontend:${{ github.sha }} ./apps/springboot/frontend
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/frontend:${{ github.sha }}
 
       - name: Set AKS context
         uses: azure/aks-set-context@v2
