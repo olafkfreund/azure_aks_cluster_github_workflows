@@ -45,3 +45,5 @@ state
 target/*
 node_modules/
 target/
+obj/
+bin/

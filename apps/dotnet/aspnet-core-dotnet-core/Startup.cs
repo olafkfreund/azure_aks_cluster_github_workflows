@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace aspnet_core_dotnet_core
 {
@@ -32,6 +33,8 @@ namespace aspnet_core_dotnet_core
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddHealthChecks();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,6 +51,7 @@ namespace aspnet_core_dotnet_core
 
             app.UseStaticFiles();
             app.UseCookiePolicy();
+            app.UseHealthChecks("/health");
 
             app.UseMvc();
         }
