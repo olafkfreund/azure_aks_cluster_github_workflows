@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: backend-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: backend
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: devacrfcaks.azurecr.io/backend:latest>
+          image: devacrfcaks.azurecr.io/backend:latest
           ports:
             - containerPort: 8080
           resources:

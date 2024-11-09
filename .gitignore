@@ -47,3 +47,4 @@ node_modules/
 target/
 obj/
 bin/
+mysql/
