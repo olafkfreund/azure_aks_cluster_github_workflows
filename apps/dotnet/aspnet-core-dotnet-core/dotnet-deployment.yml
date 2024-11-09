@@ -12,18 +12,6 @@ spec:
     matchLabels:
       app: aspnet-core
   template:
-    readinessProbe:
-      httpGet:
-      path: /healthz
-      port: 80
-      initialDelaySeconds: 5
-      periodSeconds: 10
-    livenessProbe:
-      httpGet:
-      path: /healthz
-      port: 80
-      initialDelaySeconds: 15
-      periodSeconds: 20
     metadata:
       labels:
         app: aspnet-core
@@ -33,6 +21,24 @@ spec:
         image: devacrfcaks.azurecr.io/aspnet-core-dotnet-core:latest
         ports:
         - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          timeoutSeconds: 2
+          successThreshold: 1
+          failureThreshold: 3
         resources:
           requests:
             memory: "64Mi"
