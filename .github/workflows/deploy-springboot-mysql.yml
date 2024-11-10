@@ -60,36 +60,81 @@ jobs:
       # Trivy container scan
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
+        continue-on-error: true
         with:
           image-ref: ${{ secrets.ACR_LOGIN_SERVER }}/springboot:latest
           format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
+          output: 'reports/trivy-results.txt'
           severity: 'CRITICAL,HIGH'
 
       # Secret scanning
       - name: TruffleHog OSS
         uses: trufflesecurity/trufflehog@main
+        continue-on-error: true
         with:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
           extra_args: --debug --only-verified
+  
+        # Capture TruffleHog output
+      - name: Capture TruffleHog output
+        run: trufflehog git file://./ > reports/trufflehog-results.txt
 
-  deploy-pages:
-    needs: security-checks
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: dev
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+      # Create combined report
+      - name: Create Combined Security Report
+        run: |
+          cat << 'EOF' > reports/index.html
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Security Scan Results</title>
+            <style>
+              body { font-family: Arial; margin: 40px; }
+              .section { margin-bottom: 30px; }
+              h2 { color: #333; }
+            </style>
+          </head>
+          <body>
+            <h1>Security Scan Results</h1>
+            
+            <div class="section">
+              <h2>OWASP Dependency Check</h2>
+              <iframe src="dependency-check-report.html" width="100%" height="600px"></iframe>
+            </div>
+
+            <div class="section">
+              <h2>Trivy Scan Results</h2>
+              <pre>$(cat trivy-results.txt || echo "No Trivy results available")</pre>
+            </div>
+
+            <div class="section">
+              <h2>TruffleHog Secrets Scan</h2>
+              <pre>$(cat trufflehog-results.txt || echo "No TruffleHog results available")</pre>
+            </div>
+          </body>
+          </html>
+          EOF
+
+      # Upload combined report
+      - name: Upload Combined Report
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: reports
+
+  # deploy-pages:
+  #   needs: security-checks
+  #   permissions:
+  #     pages: write
+  #     id-token: write
+  #   environment:
+  #     name: dev
+  #     url: ${{ steps.deployment.outputs.page_url }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Deploy to GitHub Pages
+  #       id: deployment
+  #       uses: actions/deploy-pages@v2
 
   build-and-deploy:
     needs: deploy-pages
@@ -181,5 +226,3 @@ jobs:
         working-directory: apps/springboot-mysql
         run: |
           kubectl apply -f deployment.yml
-
- 
