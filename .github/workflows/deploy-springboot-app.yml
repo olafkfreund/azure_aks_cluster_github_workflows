@@ -58,18 +58,24 @@ jobs:
           username: ${{ secrets.ACR_USERNAME }}
           password: ${{ secrets.ACR_PASSWORD }}
 
+      - name: Build and Push Backend Image
+        run: |
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/backend:latest ./apps/springboot/backend
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/backend:latest
+  
       - name: Build and Push Frontend Image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/springboot:latest ./apps/springboot-org
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/springboot:latest
-
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/frontend:latest ./apps/springboot/frontend
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/frontend:latest
+  
       - name: Set AKS context
         uses: azure/aks-set-context@v2
         with:
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
           resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
-
+  
       - name: Deploy to AKS
-        working-directory: apps/springboot-org
+        working-directory: apps/springboot
         run: |
-          kubectl apply -f backend/deployment.yaml
+          kubectl apply -f backend/backend-deployment.yaml
+          kubectl apply -f frontend/frontend-deployment.yaml
