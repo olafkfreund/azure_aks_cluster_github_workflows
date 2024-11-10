@@ -52,7 +52,7 @@ jobs:
       - name: Create Reports Directory
         run: |
           mkdir -p reports
-          cp dependency-check-report.html reports/index.html
+          cp ${{ github.workspace }}/dependency-check-report.html reports/index.html
           
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v2
