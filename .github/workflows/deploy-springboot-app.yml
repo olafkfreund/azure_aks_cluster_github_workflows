@@ -1,4 +1,4 @@
-name: Build and Deploy Springboot OriginalApp to AKS
+name: Build and Deploy Springboot App to AKS
 
 on:
   workflow_dispatch:
