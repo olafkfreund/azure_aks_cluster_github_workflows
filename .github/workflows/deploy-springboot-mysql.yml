@@ -89,9 +89,9 @@ jobs:
       - name: Deploy to AKS
         working-directory: apps/springboot-mysql/mysql
         run: |
-          kubectl apply -f mysql-pvc.yaml
-          kubectl apply -f mysql-deployment.yaml
-          kubectl apply -f mysql-service.yaml
+          kubectl apply -f mysql-pvc.yml
+          kubectl apply -f mysql-deployment.yml
+          kubectl apply -f mysql-service.yml
 
       - name: Deploy to AKS
         working-directory: apps/springboot-mysql
