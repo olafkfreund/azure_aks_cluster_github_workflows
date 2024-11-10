@@ -77,7 +77,7 @@ jobs:
           image-ref: ${{ secrets.ACR_LOGIN_SERVER }}/springboot:latest
           format: 'sarif'
           vuln-type: 'os,library'
-          output: 'reports/trivy-results.sarif'
+          output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
       
       - name: Upload Trivy scan results to GitHub Security tab
