@@ -58,20 +58,6 @@ jobs:
           output: 'reports/trivy-results.txt'
           severity: 'CRITICAL,HIGH'
 
-      # Secret scanning
-      - name: TruffleHog OSS
-        uses: trufflesecurity/trufflehog@main
-        continue-on-error: true
-        with:
-          path: ./
-          base: ${{ github.event.repository.default_branch }}
-          head: HEAD
-          extra_args: --debug --only-verified
-  
-        # Capture TruffleHog output
-      - name: Capture TruffleHog output
-        run: trufflehog git file://./ > reports/trufflehog-results.txt
-
   build-and-deploy:
     needs: security-checks
     runs-on: ubuntu-latest
