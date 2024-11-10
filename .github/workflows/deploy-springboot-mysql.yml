@@ -137,7 +137,7 @@ jobs:
   #       uses: actions/deploy-pages@v2
 
   build-and-deploy:
-    needs: deploy-pages
+    needs: security-checks
     runs-on: ubuntu-latest
     environment: dev
 
