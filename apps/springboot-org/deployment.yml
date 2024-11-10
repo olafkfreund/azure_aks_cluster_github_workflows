@@ -10,58 +10,61 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: springboot.freundcloud.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: spring-app
-            port:
-              number: 80
+    - host: springboot.freundcloud.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: springboot-service
+                port:
+                  number: 8080
   tls:
-  - hosts:
-    - springboot.freundcloud.com
-    secretName: springboot-tls-secret
+    - hosts:
+        - springboot.freundcloud.com
+      secretName: springboot-tls-secret
 
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: spring-app-service
+  name: springboot-service
+  labels:
+    app: springboot
 spec:
+  type: LoadBalancer
   selector:
-    app: spring-app
+    app: springboot
   ports:
-    - port: 8080
+    - protocol: TCP
+      port: 8080
       targetPort: 8080
-  type: ClusterIP
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: spring-app
+  name: springbboot
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: spring-app
+      app: springboot
   template:
     metadata:
       labels:
-        app: spring-app
+        app: springboot
     spec:
       containers:
-      - name: spring-app
-        image: devacrfcaks.azurecr.io/spring-app:latest
-        resources:
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-        ports:
-        - containerPort: 8080
+        - name: springboot
+          image: devacrfcaks.azurecr.io/springboot:latest
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+          ports:
+            - containerPort: 8080

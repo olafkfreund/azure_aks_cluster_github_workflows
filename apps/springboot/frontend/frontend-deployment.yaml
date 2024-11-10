@@ -16,7 +16,7 @@ spec:
         - name: frontend
           image: devacrfcaks.azurecr.io/frontend:latest
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           resources:
             requests:
               memory: "128Mi"
@@ -35,15 +35,15 @@ spec:
     app: frontend
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 80
+      port: 8080
+      targetPort: 8080
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: springboot-ingress
+  name: springboot-frontend-ingress
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt
@@ -59,7 +59,7 @@ spec:
           service:
             name: frontend-service
             port:
-              number: 80
+              number: 8080
   tls:
   - hosts:
     - frontend.freundcloud.com
