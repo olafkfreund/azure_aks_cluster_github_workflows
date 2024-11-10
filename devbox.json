@@ -12,9 +12,9 @@
     "maven@latest",
     "mysql80@latest",
     "minikube@latest",
-    "nodejs@12.18.0",
     "nodePackages.webpack@5.68.0",
-    "nodePackages.webpack-cli@4.9.2"
+    "nodePackages.webpack-cli@4.9.2",
+    "nodejs@14.4.0"
   ],
   "shell": {
     "init_hook": [

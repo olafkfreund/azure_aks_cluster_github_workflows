@@ -438,12 +438,12 @@
         }
       }
     },
-    "nodejs@12.18.0": {
-      "last_modified": "2020-06-18T07:06:33Z",
+    "nodejs@14.4.0": {
+      "last_modified": "2020-06-30T02:44:55Z",
       "plugin_version": "0.0.2",
-      "resolved": "github:NixOS/nixpkgs/9480bae337095fd24f61380bce3174fdfe926a00#nodejs",
+      "resolved": "github:NixOS/nixpkgs/e912fb83d2155a393e7146da98cda0e455a80fb6#nodejs-14_x",
       "source": "devbox-search",
-      "version": "12.18.0"
+      "version": "14.4.0"
     },
     "teller@latest": {
       "last_modified": "2024-11-03T14:18:04Z",
