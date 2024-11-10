@@ -3,9 +3,9 @@ spring:
     rest:
       base-path: /api
   datasource:
-    url: jdbc:mysql://<your-azure-mysql-server-name>.mysql.database.azure.com:3306/<database-name>?useSSL=true&requireSSL=false
-    username: <your-username>@<your-azure-mysql-server-name>
-    password: <your-password>
+    url: jdbc:mysql://${MYSQL_SERVER_NAME}.mysql.database.azure.com:3306/${MYSQL_DATABASE}?useSSL=true&requireSSL=false
+    username: ${MYSQL_USERNAME}@${MYSQL_SERVER_NAME}
+    password: ${MYSQL_PASSWORD}
   jpa:
     properties:
       hibernate:

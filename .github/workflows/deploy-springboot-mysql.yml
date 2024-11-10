@@ -29,6 +29,11 @@ jobs:
 
       - name: Build Backend
         working-directory: apps/springboot-mysql
+        env:
+          MYSQL_SERVER_NAME: ${{ secrets.MYSQL_SERVER_NAME }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USERNAME: ${{ secrets.MYSQL_USERNAME }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         run: mvn clean package -DskipTests
 
       - name: Azure Login
