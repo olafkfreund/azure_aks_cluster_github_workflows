@@ -7,7 +7,89 @@ on:
 permissions:
   id-token: write
   contents: read
+  pages: write
+  security-events: write
 jobs:
+  security-checks:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      # OWASP Dependency Check
+      - name: OWASP Dependency Check
+        uses: dependency-check/Dependency-Check_Action@main
+        with:
+          project: 'springboot-mysql'
+          path: '.'
+          format: 'HTML'
+          args: >
+            --failOnCVSS 7
+            --enableRetired
+      
+      # After OWASP Dependency Check
+      - name: Upload OWASP Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-check-report
+          path: ${{ github.workspace }}/dependency-check-report.html
+          
+      # Add GitHub Pages deployment
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+        
+      - name: Create Reports Directory
+        run: |
+          mkdir -p reports
+          cp dependency-check-report.html reports/index.html
+          
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: reports
+
+      # Trivy container scan
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ secrets.ACR_LOGIN_SERVER }}/springboot:latest
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      # Secret scanning
+      - name: TruffleHog OSS
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+  deploy-pages:
+    needs: security-checks
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: dev
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
+
   build-and-deploy:
     runs-on: ubuntu-latest
     environment: dev
