@@ -87,14 +87,15 @@ jobs:
         run: kubectl apply -f mysql-secret.yml
         
       - name: Deploy to AKS
-        working-directory: apps/springboot-mysql
+        working-directory: apps/springboot-mysql/mysql
         run: |
-          kubectl apply -f mysql/mysql-pvc.yaml
-          kubectl apply -f mysql/mysql-deployment.yaml
-          kubectl apply -f mysql/mysql-service.yaml
+          kubectl apply -f mysql-pvc.yaml
+          kubectl apply -f mysql-deployment.yaml
+          kubectl apply -f mysql-service.yaml
 
       - name: Deploy to AKS
         working-directory: apps/springboot-mysql
         run: |
           kubectl apply -f deployment.yml
+
  
