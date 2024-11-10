@@ -71,13 +71,19 @@ jobs:
 
       # Trivy container scan
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
+        uses: aquasecurity/trivy-action@0.28.0
         continue-on-error: true
         with:
           image-ref: ${{ secrets.ACR_LOGIN_SERVER }}/springboot:latest
-          format: 'table'
-          output: 'reports/trivy-results.txt'
+          format: 'sarif'
+          vuln-type: 'os,library'
+          output: 'reports/trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
+      
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
 
   build-and-deploy:
     needs: security-checks
