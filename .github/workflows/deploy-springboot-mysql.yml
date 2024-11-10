@@ -18,11 +18,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+      # - name: Set up Java
+      #   uses: actions/setup-java@v3
+      #   with:
+      #     distribution: 'temurin'
+      #     java-version: '17'
 
       # OWASP Dependency Check
       - name: OWASP Dependency Check
@@ -91,6 +91,7 @@ jobs:
         uses: actions/deploy-pages@v2
 
   build-and-deploy:
+    needs: deploy-pages
     runs-on: ubuntu-latest
     environment: dev
 
@@ -101,8 +102,8 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'  # Popular distribution of OpenJDK
-          java-version: '17'  # Use your Java version
+          distribution: 'temurin'
+          java-version: '17'
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
