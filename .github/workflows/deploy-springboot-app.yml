@@ -31,6 +31,12 @@ jobs:
         working-directory: apps/springboot/backend
         run: mvn clean package -DskipTests
 
+      - name: Build Frontend
+        working-directory: apps/springboot/frontend
+        run: |
+          npm install --force
+          npm run build
+
       - name: Azure Login
         uses: azure/login@v2
         with:
