@@ -3,14 +3,14 @@ kind: Ingress
 metadata:
   name: springboot-ingress
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/use-regex: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: letsencrypt
 spec:
   ingressClassName: nginx
   rules:
-  - host: frontend.freundcloud.com
+  - host: springboot.freundcloud.com
     http:
       paths:
       - path: /
@@ -22,7 +22,7 @@ spec:
               number: 80
   tls:
   - hosts:
-    - frontend.freundcloud.com
+    - springboot.freundcloud.com
     secretName: springboot-tls-secret
 
 ---
