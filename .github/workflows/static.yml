@@ -31,6 +31,30 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Install Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc
+
+      - name: Convert MD to HTML
+        working-directory: docs
+        run: |
+          for file in $(find . -name "*.md"); do
+            if [[ "$file" != "./README.md" && "$file" != ./.github/* ]]; then
+              output_file="${file%.md}.html"
+              echo "Converting $file to $output_file"
+              pandoc -f markdown -t html "$file" -o "$output_file" --metadata title="${file%.md}"
+            fi
+          done
+
+      - name: Commit HTML files
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add *.html
+          git commit -m "Convert MD to HTML" || echo "No changes to commit"
+          git push origin ${GITHUB_REF#refs/heads/}
+
       - name: Generate index.html
         run: |
           echo "<!DOCTYPE html>" > docs/index.html
