@@ -10,7 +10,24 @@
 - Just command runner installed
 - Access to Azure subscription
 
-## Environment Configuration
+
+## Detailed Documentation
+
+Additional documentation can be found in the following files:
+
+- [Devbox](./docs/Devbox.md)
+- [Deploy Infra](./docs/deploy-infra.md)
+- [Dotnet Application Deployment](./docs/dotnet-deployment.md)
+- [Springboot App Original](./docs/springboot-org.md)
+- [Springboot App with Mysql](./docs/springboot-mysql.md)
+- [Github Backbone deployment](./docs/Github-backbone-deployment.md)
+- [Github Secrets configuration](./docs/github-secrets.md)
+
+## In order to deploy the cluster
+
+1. Deploy the 
+
+## Local Development Environment Configuration
 
 ### Initial Setup
 

@@ -1,10 +1,12 @@
-# justfile
-
 # Variables
 set dotenv-load
 registry := "devacrfcaks.azurecr.io"
 aks_name := "dev-fcaks"
 rg := "rg-fc-aks"
+resource_group_name := "rg-fcaks-tfstate"
+storage_account_name := "fcdevfstate"
+container_name := "tfstate"
+
 
 
 login:
@@ -55,7 +57,6 @@ get-deployments:
 get-ingress:
     kubectl get ingress -A
 
-#GitHub Deployment
 gh-tf-init:
     cd ./github-deployment/ && terraform init
 
@@ -73,7 +74,7 @@ gh-tf-destroy:
 
 #Azure infra  Deployment
 cs-tf-init:
-    cd ./cluster-deployment/ && terraform init
+    cd ./cluster-deployment/ && terraform init -backend-config={{resource_group_name}} -backend-config={{storage_account_name}} -backend-config={{container_name}}
 
 cs-tf-plan:
     cd ./cluster-deployment/ && terraform plan -var-file=tfvars/terraform.tfvars -out=tfplan
@@ -94,5 +95,4 @@ deploy: login aks-credentials docker-build docker-push \
 
 
 cleanup:
-    kubectl delete -f k8s/
     az group delete --name {{rg}} --yes --no-wait
