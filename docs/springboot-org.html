@@ -1,0 +1,81 @@
+<h1 id="spring-boot-original-app-deployment-workflow">Spring Boot Original App Deployment Workflow</h1>
+<h2 id="overview">Overview</h2>
+<p>This GitHub Actions workflow automates the process of building and deploying the original Spring Boot application to Azure Kubernetes Service (AKS).</p>
+<h2 id="workflow-triggers">Workflow Triggers</h2>
+<ul>
+<li>Manual trigger via <code>workflow_dispatch</code></li>
+<li>Automatic trigger on pushes to main branch that modify files in <code>apps/springboot-org/</code></li>
+</ul>
+<h2 id="permissions">Permissions</h2>
+<ul>
+<li><code>id-token: write</code>: Required for Azure OIDC authentication</li>
+<li><code>contents: read</code>: Required for repository access</li>
+</ul>
+<h2 id="environment">Environment</h2>
+<ul>
+<li>Runs on: <code>ubuntu-latest</code><br />
+</li>
+<li>Environment: <code>dev</code></li>
+</ul>
+<h2 id="workflow-steps">Workflow Steps</h2>
+<h3 id="setup-development-environment">1. Setup Development Environment</h3>
+<ul>
+<li>Checkout code using <code>actions/checkout@v3</code></li>
+<li>Setup Java 17 (Temurin distribution) using <code>actions/setup-java@v3</code></li>
+<li>Setup Node.js 16 using <code>actions/setup-node@v3</code></li>
+</ul>
+<h3 id="build-application">2. Build Application</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">working-directory</span><span class="kw">:</span><span class="at"> apps/springboot-org</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span><span class="at"> mvn clean package -DskipTests</span></span></code></pre></div>
+<p>Builds the Spring Boot application while skipping tests</p>
+<h3 id="azure-authentication-setup">3. Azure Authentication &amp; Setup</h3>
+<ul>
+<li>Azure login using OIDC with provided credentials</li>
+<li>Verify account access using Azure CLI</li>
+<li>Login to Azure Container Registry (ACR)</li>
+</ul>
+<h3 id="container-management">4. Container Management</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">Build and tag Docker image</span><span class="kw">:</span><span class="at"> </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="at">  $ACR_LOGIN_SERVER/springboot:latest</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> Push image to ACR</span></span></code></pre></div>
+<h3 id="kubernetes-deployment">5. Kubernetes Deployment</h3>
+<ul>
+<li>Set AKS cluster context</li>
+<li>Deploy application using Kubernetes manifests from <code>deployment.yml</code></li>
+</ul>
+<h2 id="required-secrets">Required Secrets</h2>
+<h3 id="azure-authentication">Azure Authentication</h3>
+<ul>
+<li><code>AZURE_CLIENT_ID</code></li>
+<li><code>AZURE_TENANT_ID</code></li>
+<li><code>AZURE_SUBSCRIPTION_ID</code></li>
+</ul>
+<h3 id="container-registry">Container Registry</h3>
+<ul>
+<li><code>ACR_LOGIN_SERVER</code></li>
+<li><code>ACR_USERNAME</code></li>
+<li><code>ACR_PASSWORD</code></li>
+</ul>
+<h3 id="kubernetes">Kubernetes</h3>
+<ul>
+<li><code>AKS_CLUSTER_NAME</code></li>
+<li><code>AKS_RESOURCE_GROUP</code></li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Uses <code>latest</code> tag for Docker images</li>
+<li>Skips tests during build process</li>
+<li>Requires pre-configured AKS cluster</li>
+<li>Requires existing Kubernetes deployment manifests</li>
+<li>Uses workdir <code>apps/springboot-org</code> for build and deploy steps</li>
+</ul>
+<h2 id="dependencies">Dependencies</h2>
+<ul>
+<li><code>actions/checkout@v3</code></li>
+<li><code>actions/setup-java@v3</code></li>
+<li><code>actions/setup-node@v3</code></li>
+<li><code>azure/login@v2</code></li>
+<li><code>azure/cli@v2</code></li>
+<li><code>azure/docker-login@v1</code></li>
+<li><code>azure/aks-set-context@v2</code></li>
+</ul>

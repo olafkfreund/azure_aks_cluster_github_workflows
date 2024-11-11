@@ -1,0 +1,57 @@
+<h1 id="infrastructure-destruction-workflow-documentation">Infrastructure Destruction Workflow Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This GitHub Actions workflow automates the destruction of Azure Kubernetes Service (AKS) infrastructure using Terraform.</p>
+<h2 id="workflow-triggers">Workflow Triggers</h2>
+<ul>
+<li>Manual trigger via <code>workflow_dispatch</code></li>
+<li>(Commented out) Pull request trigger for main branch</li>
+</ul>
+<h2 id="permissions">Permissions</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">permissions</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> read</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">id-token</span><span class="kw">:</span><span class="at"> write</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">  </span><span class="fu">pull-requests</span><span class="kw">:</span><span class="at"> write</span></span></code></pre></div>
+<h2 id="environment-variables">Environment Variables</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">env</span><span class="kw">:</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">ARM_CLIENT_ID</span><span class="kw">:</span><span class="at"> Azure service principal client ID</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">ARM_SUBSCRIPTION_ID</span><span class="kw">:</span><span class="at"> Azure subscription ID  </span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="at">  </span><span class="fu">ARM_TENANT_ID</span><span class="kw">:</span><span class="at"> Azure tenant ID</span></span></code></pre></div>
+<h2 id="required-secrets">Required Secrets</h2>
+<ul>
+<li><code>AZURE_CLIENT_ID</code></li>
+<li><code>AZURE_TENANT_ID</code></li>
+<li><code>AZURE_SUBSCRIPTION_ID</code></li>
+<li><code>BACKEND_AZURE_RESOURCE_GROUP_NAME</code></li>
+<li><code>BACKEND_AZURE_STORAGE_ACCOUNT_NAME</code></li>
+<li><code>BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME</code></li>
+</ul>
+<h2 id="workflow-steps">Workflow Steps</h2>
+<h3 id="azure-authentication">1. Azure Authentication</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Azure login</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> azure/login@v2</span></span></code></pre></div>
+<p>Authenticates with Azure using service principal credentials.</p>
+<h3 id="terraform-setup">2. Terraform Setup</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Setup Terraform</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> hashicorp/setup-terraform@v2</span></span></code></pre></div>
+<p>Installs Terraform CLI for infrastructure management.</p>
+<h3 id="terraform-backend-configuration">3. Terraform Backend Configuration</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Terraform Init</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">run</span><span class="kw">:</span><span class="at"> terraform init [backend-config...]</span></span></code></pre></div>
+<p>Initializes Terraform with Azure storage backend configuration.</p>
+<h3 id="execute-destroy">4. Execute Destroy</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Terraform Apply</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">run</span><span class="kw">:</span><span class="at"> terraform destroy -auto-approve</span></span></code></pre></div>
+<p>Executes Terraform destroy command to remove all infrastructure.</p>
+<h2 id="environment">Environment</h2>
+<ul>
+<li>Runs on: <code>ubuntu-latest</code></li>
+<li>Environment: <code>destroy</code></li>
+<li>Working directory: cluster-deployment</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Uses Azure remote state storage</li>
+<li>Auto-approves destruction without confirmation</li>
+<li>Requires Azure authentication</li>
+<li>Designed for complete infrastructure teardown</li>
+</ul>

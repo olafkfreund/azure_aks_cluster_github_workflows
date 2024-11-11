@@ -1,0 +1,52 @@
+<h1 id="backend-deployment-documentation">Backend Deployment Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This Kubernetes configuration defines the deployment setup for a Spring Boot backend service running in Azure Kubernetes Service (AKS).</p>
+<h2 id="components">Components</h2>
+<h3 id="deployment">1. Deployment</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> backend-deployment</span></span></code></pre></div>
+<ul>
+<li>Maintains 2 replicas for high availability</li>
+<li>Uses container image from Azure Container Registry</li>
+<li>Resource constraints configured:
+<ul>
+<li>Requests: 64Mi memory, 250m CPU</li>
+<li>Limits: 128Mi memory, 500m CPU</li>
+</ul></li>
+<li>Exposes port 8080</li>
+</ul>
+<h3 id="service">2. Service</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> backend-service</span></span></code></pre></div>
+<ul>
+<li>Standard ClusterIP service type</li>
+<li>Exposes port 8080 internally</li>
+<li>Routes traffic to pods with label <code>app: backend</code></li>
+<li>Used by frontend to access backend API</li>
+</ul>
+<h2 id="resource-management">Resource Management</h2>
+<ul>
+<li>CPU and memory limits prevent resource exhaustion:
+<ul>
+<li>Minimum guaranteed resources (requests)</li>
+<li>Maximum allowed resources (limits)</li>
+</ul></li>
+<li>Two replicas ensure availability during updates</li>
+</ul>
+<h2 id="configuration-requirements">Configuration Requirements</h2>
+<ul>
+<li>Requires secret <code>ACR_LOGIN_SERVER</code> for image repository</li>
+<li>Application must listen on port 8080</li>
+<li>Pods must pass readiness/liveness probes (if configured)</li>
+</ul>
+<h2 id="deployment-1">Deployment</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="ex">kubectl</span> apply -f backend-deployment.yaml</span></code></pre></div>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Service discovery uses label selector <code>app: backend</code></li>
+<li>No external access - only accessible within cluster</li>
+<li>Designed to work with frontend service through internal networking</li>
+<li>Resource limits should be adjusted based on actual application needs</li>
+</ul>

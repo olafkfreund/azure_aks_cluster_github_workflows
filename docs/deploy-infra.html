@@ -1,0 +1,67 @@
+<h1 id="github-actions-workflow-documentation---infrastructure-deployment">GitHub Actions Workflow Documentation - Infrastructure Deployment</h1>
+<h2 id="overview">Overview</h2>
+<p>This workflow handles Terraform infrastructure deployment with plan and apply stages.</p>
+<h2 id="workflow-structure">Workflow Structure</h2>
+<h3 id="plan-stage-steps">Plan Stage Steps</h3>
+<ol type="1">
+<li><p><strong>Format Terraform Plan Output</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Convert Plan to String</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">id</span><span class="kw">:</span><span class="at"> tf-plan-string</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="fu">  run</span><span class="kw">: </span><span class="ch">|</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>    # Formats terraform plan with collapsible markdown output</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>    # Includes random delimiter for output parsing</span></code></pre></div></li>
+<li><p><strong>Publish Plan Summary</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Publish Terraform Plan to Task Summary</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co">  # Adds plan to GitHub step summary</span></span></code></pre></div></li>
+<li><p><strong>PR Comments</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Push Terraform Output to PR</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="co">  # Posts plan as comment on PR</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="co">  # Only runs on non-main branches</span></span></code></pre></div></li>
+</ol>
+<h3 id="apply-stage-steps">Apply Stage Steps</h3>
+<ol type="1">
+<li><p><strong>Azure Authentication</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Azure login</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="co">  # Authenticates using Azure service principal</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="co">  # Required secrets:</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> AZURE_CLIENT_ID</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> AZURE_TENANT_ID</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> AZURE_SUBSCRIPTION_ID</span></span></code></pre></div></li>
+<li><p><strong>Terraform Setup</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Setup Terraform</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="co">  # Installs Terraform CLI</span></span></code></pre></div></li>
+<li><p><strong>Backend Configuration</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Terraform Init</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="co">  # Initializes backend with Azure storage</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="co">  # Required secrets:</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> BACKEND_AZURE_RESOURCE_GROUP_NAME</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> BACKEND_AZURE_STORAGE_ACCOUNT_NAME</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="at">    </span><span class="kw">-</span><span class="at"> BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME</span></span></code></pre></div></li>
+<li><p><strong>Plan Retrieval &amp; Apply</strong></p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Download Terraform Plan</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="co">  # Downloads plan artifact</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Terraform Apply</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="co">  # Applies the plan automatically</span></span></code></pre></div></li>
+</ol>
+<h2 id="required-secrets">Required Secrets</h2>
+<ul>
+<li><code>AZURE_CLIENT_ID</code></li>
+<li><code>AZURE_TENANT_ID</code></li>
+<li><code>AZURE_SUBSCRIPTION_ID</code></li>
+<li><code>BACKEND_AZURE_RESOURCE_GROUP_NAME</code></li>
+<li><code>BACKEND_AZURE_STORAGE_ACCOUNT_NAME</code></li>
+<li><code>BACKEND_AZURE_STORAGE_ACCOUNT_CONTAINER_NAME</code></li>
+<li><code>GITHUB_TOKEN</code></li>
+</ul>
+<h2 id="environment">Environment</h2>
+<ul>
+<li>Runs on: <code>ubuntu-latest</code></li>
+<li>Environment: <code>dev</code></li>
+<li>Working directory: cluster-deployment</li>
+</ul>
+<h2 id="dependencies">Dependencies</h2>
+<ul>
+<li>Plan stage must complete before Apply stage</li>
+<li>Requires Azure backend storage configuration</li>
+<li>GitHub Actions permissions for PR comments</li>
+</ul>

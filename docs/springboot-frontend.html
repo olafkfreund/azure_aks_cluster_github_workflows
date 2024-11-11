@@ -1,0 +1,63 @@
+<h1 id="frontend-deployment-documentation">Frontend Deployment Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This Kubernetes configuration defines the deployment setup for a frontend application running in AKS (Azure Kubernetes Service).</p>
+<h2 id="components">Components</h2>
+<h3 id="deployment">1. Deployment</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Deployment</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> frontend-deployment</span></span></code></pre></div>
+<ul>
+<li>Maintains 2 replicas</li>
+<li>Uses container image from Azure Container Registry</li>
+<li>Resource constraints:
+<ul>
+<li>Requests: 64Mi memory, 250m CPU</li>
+<li>Limits: 128Mi memory, 500m CPU</li>
+</ul></li>
+<li>Exposes port 80</li>
+</ul>
+<h3 id="service">2. Service</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Service</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> frontend-service</span></span></code></pre></div>
+<ul>
+<li>Type: LoadBalancer</li>
+<li>Exposes port 80</li>
+<li>Routes traffic to pods with label <code>app: frontend</code></li>
+</ul>
+<h3 id="ingress">3. Ingress</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="fu">kind</span><span class="kw">:</span><span class="at"> Ingress</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="fu">metadata</span><span class="kw">:</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">name</span><span class="kw">:</span><span class="at"> springboot-ingress</span></span></code></pre></div>
+<ul>
+<li>Uses NGINX ingress controller</li>
+<li>Configures routing rules:
+<ul>
+<li>Frontend: <code>/*</code> → <code>frontend-service:80</code></li>
+<li>Backend API: <code>/api/*</code> → <code>backend-service:8080</code></li>
+</ul></li>
+<li>TLS enabled with Let’s Encrypt certificates</li>
+<li>URL rewriting enabled</li>
+</ul>
+<h2 id="security">Security</h2>
+<ul>
+<li>HTTPS enabled via cert-manager</li>
+<li>TLS certificates managed by Let’s Encrypt</li>
+<li>Uses secret <code>your-tls-secret</code> for TLS</li>
+</ul>
+<h2 id="deployment-1">Deployment</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ex">kubectl</span> apply -f frontend-deployment.yaml</span></code></pre></div>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>NGINX Ingress Controller installed</li>
+<li>cert-manager configured</li>
+<li>Secret <code>ACR_LOGIN_SERVER</code> configured</li>
+<li>Domain configured in secrets</li>
+<li>Let’s Encrypt ClusterIssuer configured</li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Uses LoadBalancer service type for external access</li>
+<li>Implements path-based routing for frontend and API requests</li>
+<li>Automatic SSL certificate management through cert-manager</li>
+</ul>

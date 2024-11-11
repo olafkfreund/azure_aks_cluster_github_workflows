@@ -1,0 +1,65 @@
+<h1 id="github-infrastructure-terraform-test-workflow-documentation">GitHub Infrastructure Terraform Test Workflow Documentation</h1>
+<h2 id="overview">Overview</h2>
+<p>This GitHub Actions workflow runs automated tests on the Terraform configuration for GitHub infrastructure deployment.</p>
+<h2 id="workflow-triggers">Workflow Triggers</h2>
+<ul>
+<li>Manual trigger via <code>workflow_dispatch</code></li>
+<li>(Commented out) Automatic triggers for:
+<ul>
+<li>Pull requests to main branch</li>
+<li>Pushes to main branch</li>
+</ul></li>
+</ul>
+<h2 id="environment-requirements">Environment Requirements</h2>
+<h3 id="required-secrets">Required Secrets</h3>
+<ul>
+<li><code>AZURE_CLIENT_ID</code>: Azure service principal client ID</li>
+<li><code>AZURE_TENANT_ID</code>: Azure tenant ID</li>
+<li><code>AZURE_SUBSCRIPTION_ID</code>: Azure subscription ID</li>
+</ul>
+<h2 id="workflow-steps">Workflow Steps</h2>
+<h3 id="environment-setup">1. Environment Setup</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> hashicorp/setup-terraform@v2</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">    </span><span class="fu">terraform_version</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;1.5.0&#39;</span></span></code></pre></div>
+<ul>
+<li>Checks out repository code</li>
+<li>Installs Terraform v1.5.0</li>
+</ul>
+<h3 id="azure-authentication">2. Azure Authentication</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> azure/login@v2</span></span></code></pre></div>
+<ul>
+<li>Authenticates with Azure using OIDC</li>
+<li>Requires Azure service principal credentials</li>
+</ul>
+<h3 id="terraform-testing">3. Terraform Testing</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Terraform Init GitHub</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">run</span><span class="kw">:</span><span class="at"> terraform init</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Run Terraform Tests GitHub</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="at">  </span><span class="fu">run</span><span class="kw">:</span><span class="at"> terraform test -verbose</span></span></code></pre></div>
+<ul>
+<li>Initializes Terraform in the <code>github-deployment</code> directory</li>
+<li>Runs Terraform tests with verbose output</li>
+</ul>
+<h3 id="test-reporting">4. Test Reporting</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> dorny/test-reporter@v1</span></span></code></pre></div>
+<ul>
+<li>Reports test results in JUnit format</li>
+<li>Publishes results even if tests fail (<code>if: always()</code>)</li>
+<li>Looks for test results in <code>TestResults/*.xml</code></li>
+</ul>
+<h2 id="usage">Usage</h2>
+<ol type="1">
+<li>Ensure Azure credentials are configured in repository secrets</li>
+<li>Run workflow manually through GitHub Actions UI</li>
+<li>View test results in the Actions tab</li>
+</ol>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Uses Terraform 1.5.0 specifically</li>
+<li>Tests run in the <code>github-deployment</code> directory</li>
+<li>Results published in JUnit format for easy viewing</li>
+<li>Continues to publish results even if tests fail</li>
+</ul>

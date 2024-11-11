@@ -1,0 +1,78 @@
+<h1 id="spring-boot-application-deployment-workflow">Spring Boot Application Deployment Workflow</h1>
+<h2 id="overview">Overview</h2>
+<p>This GitHub Actions workflow automates the build and deployment process of a Spring Boot application with a React frontend to Azure Kubernetes Service (AKS).</p>
+<h2 id="workflow-triggers">Workflow Triggers</h2>
+<ul>
+<li>Manual trigger using <code>workflow_dispatch</code></li>
+<li>(Commented out) Automatic trigger on pushes to main branch</li>
+</ul>
+<h2 id="environment-requirements">Environment Requirements</h2>
+<h3 id="azure-resources">Azure Resources</h3>
+<ul>
+<li>Azure Kubernetes Service (AKS) cluster</li>
+<li>Azure Container Registry (ACR)</li>
+</ul>
+<h3 id="required-secrets">Required Secrets</h3>
+<ul>
+<li><code>AZURE_CREDENTIALS</code>: Azure service principal credentials</li>
+<li><code>ACR_LOGIN_SERVER</code>: Azure Container Registry server URL</li>
+<li><code>ACR_USERNAME</code>: ACR login username</li>
+<li><code>ACR_PASSWORD</code>: ACR login password</li>
+<li><code>AKS_CLUSTER_NAME</code>: Name of the AKS cluster</li>
+<li><code>AKS_RESOURCE_GROUP</code>: Resource group containing the AKS cluster</li>
+</ul>
+<h2 id="workflow-steps">Workflow Steps</h2>
+<h3 id="setup-environment">1. Setup Environment</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v3</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-java@v3</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">    </span><span class="fu">java-version</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;17&#39;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/setup-node@v3</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="at">  </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="at">    </span><span class="fu">node-version</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;16&#39;</span></span></code></pre></div>
+<h3 id="build-applications">2. Build Applications</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># Backend Build</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">run</span><span class="kw">:</span><span class="at"> mvn clean package -DskipTests</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">working-directory</span><span class="kw">:</span><span class="at"> backend</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="co"># Frontend Build</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="kw">- </span><span class="fu">run</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a>    npm install</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true"></a>    npm run build</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true"></a><span class="at">  </span><span class="fu">working-directory</span><span class="kw">:</span><span class="at"> frontend</span></span></code></pre></div>
+<h3 id="container-image-management">3. Container Image Management</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="co"># Build and push backend image</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="kw">- </span><span class="fu">run</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a>    docker build -t $ACR_LOGIN_SERVER/backend:${{ github.sha }} ./backend</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a>    docker login $ACR_LOGIN_SERVER</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a>    docker push $ACR_LOGIN_SERVER/backend:${{ github.sha }}</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true"></a><span class="co"># Build and push frontend image</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true"></a><span class="kw">- </span><span class="fu">run</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true"></a>    docker build -t $ACR_LOGIN_SERVER/frontend:${{ github.sha }} ./frontend</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true"></a>    docker login $ACR_LOGIN_SERVER</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true"></a>    docker push $ACR_LOGIN_SERVER/frontend:${{ github.sha }}</span></code></pre></div>
+<h3 id="aks-deployment">4. AKS Deployment</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># Set AKS context</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> azure/aks-set-context@v2</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="co"># Update deployments</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="kw">- </span><span class="fu">run</span><span class="kw">:</span><span class="at"> </span><span class="ch">|</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>    kubectl set image deployment/backend-deployment backend=$ACR_LOGIN_SERVER/backend:${{ github.sha }}</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>    kubectl set image deployment/frontend-deployment frontend=$ACR_LOGIN_SERVER/frontend:${{ github.sha }}</span></code></pre></div>
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+<li>Existing Kubernetes deployments named <code>backend-deployment</code> and <code>frontend-deployment</code></li>
+<li>Azure credentials with permissions to:
+<ul>
+<li>Push to ACR</li>
+<li>Deploy to AKS</li>
+<li>Update Kubernetes deployments</li>
+</ul></li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Uses container image tags based on GitHub commit SHA</li>
+<li>Skips backend tests during build (<code>-DskipTests</code>)</li>
+<li>Both frontend and backend services must be pre-deployed to AKS</li>
+</ul>
