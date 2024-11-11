@@ -1,0 +1,73 @@
+<h1 id="github-pages-documentation-deployment-workflow">GitHub Pages Documentation Deployment Workflow</h1>
+<h2 id="overview">Overview</h2>
+<p>This GitHub Actions workflow automates the process of converting Markdown documentation files to HTML and deploying them to GitHub Pages.</p>
+<h2 id="workflow-triggers">Workflow Triggers</h2>
+<ul>
+<li>Automatically on push to <code>main</code> branch when files in <code>docs/**/*.md</code> are modified</li>
+<li>Manually via workflow dispatch</li>
+</ul>
+<h2 id="permissions">Permissions</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="fu">permissions</span><span class="kw">:</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">contents</span><span class="kw">:</span><span class="at"> write</span><span class="co">  # For committing changes</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="at">  </span><span class="fu">pages</span><span class="kw">:</span><span class="at"> write</span><span class="co">     # For GitHub Pages deployment</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="at">  </span><span class="fu">id-token</span><span class="kw">:</span><span class="at"> write</span><span class="co">  # For authentication</span></span></code></pre></div>
+<h2 id="workflow-steps">Workflow Steps</h2>
+<h3 id="environment-setup">1. Environment Setup</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/checkout@v4</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/configure-pages@v5</span></span></code></pre></div>
+<ul>
+<li>Checks out repository code</li>
+<li>Configures GitHub Pages environment</li>
+</ul>
+<h3 id="documentation-processing">2. Documentation Processing</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Install Pandoc</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true"></a><span class="co">  # Installs Pandoc for Markdown to HTML conversion</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Convert MD to HTML</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true"></a><span class="co">  # Converts all .md files to .html</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true"></a><span class="co">  # Excludes README.md and .github directory</span></span></code></pre></div>
+<h3 id="html-generation">3. HTML Generation</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">name</span><span class="kw">:</span><span class="at"> Generate index.html</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a><span class="co">  # Creates an index page with:</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> Documentation title</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> Styled layout</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a><span class="at">  </span><span class="kw">-</span><span class="at"> Links to all converted documentation</span></span></code></pre></div>
+<h3 id="deployment">4. Deployment</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/upload-pages-artifact@v3</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="at">  </span><span class="fu">with</span><span class="kw">:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="at">    </span><span class="fu">path</span><span class="kw">:</span><span class="at"> </span><span class="st">&#39;docs/&#39;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="kw">-</span><span class="at"> </span><span class="fu">uses</span><span class="kw">:</span><span class="at"> actions/deploy-pages@v4</span></span></code></pre></div>
+<h2 id="features">Features</h2>
+<ul>
+<li>Automatic Markdown to HTML conversion using Pandoc</li>
+<li>Generates styled index page</li>
+<li>Maintains documentation hierarchy</li>
+<li>Concurrent deployment protection</li>
+<li>Automatic git commits for generated files</li>
+</ul>
+<h2 id="requirements">Requirements</h2>
+<ul>
+<li>Repository must have GitHub Pages enabled</li>
+<li>Documentation files must be in docs directory</li>
+<li>Files must use <code>.md</code> extension</li>
+</ul>
+<h2 id="output">Output</h2>
+<ul>
+<li>Converted HTML files in docs directory</li>
+<li>Index page listing all documentation</li>
+<li>Deployed to GitHub Pages URL</li>
+<li>Commit with converted files in repository</li>
+</ul>
+<h2 id="environment">Environment</h2>
+<ul>
+<li>Runs on: <code>ubuntu-latest</code></li>
+<li>Environment: <code>github-pages</code></li>
+<li>URL available in: <code>steps.deployment.outputs.page_url</code></li>
+</ul>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Skips conversion of <code>README.md</code></li>
+<li>Skips files in .github directory</li>
+<li>Uses sans-serif font and responsive layout</li>
+<li>Maximum width of 800px for readability</li>
+</ul>
