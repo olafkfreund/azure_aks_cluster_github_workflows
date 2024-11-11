@@ -1,0 +1,61 @@
+<h1 id="justfile-documentation">Justfile Documentation</h1>
+<h2 id="variables">Variables</h2>
+<pre class="just"><code>set dotenv-load
+registry := &quot;devacrfcaks.azurecr.io&quot;
+aks_name := &quot;dev-fcaks&quot;
+rg := &quot;rg-fc-aks&quot;
+resource_group_name := &quot;rg-fcaks-tfstate&quot;
+storage_account_name := &quot;fcdevfstate&quot;
+container_name := &quot;tfstate&quot;</code></pre>
+<h2 id="authentication-commands">Authentication Commands</h2>
+<pre class="just"><code>login                 # Login to Azure and set subscription
+aks-credentials       # Get AKS cluster credentials</code></pre>
+<h2 id="docker-commands">Docker Commands</h2>
+<pre class="just"><code>docker-build         # Build Docker images for springboot and .NET applications
+docker-push          # Login to ACR and push Docker images</code></pre>
+<h2 id="kubernetes-deployment-commands">Kubernetes Deployment Commands</h2>
+<pre class="just"><code>k8s-deploy-springboot        # Deploy springboot application
+k8s-deploy-springboot-mysql  # Deploy springboot with MySQL
+k8s-deploy-dotnet           # Deploy .NET application
+install-nginx-ingress       # Install NGINX ingress controller</code></pre>
+<h2 id="kubernetes-resource-commands">Kubernetes Resource Commands</h2>
+<pre class="just"><code>get-pods              # List all pods
+get-services          # List all services
+get-deployments       # List all deployments
+get-ingress          # List all ingress resources</code></pre>
+<h2 id="github-infrastructure-commands">GitHub Infrastructure Commands</h2>
+<pre class="just"><code>gh-tf-init           # Initialize Terraform for GitHub deployment
+gh-tf-plan           # Plan GitHub infrastructure changes
+gh-tf-apply          # Apply GitHub infrastructure changes
+gh-tf-test           # Run GitHub infrastructure tests
+gh-tf-destroy        # Destroy GitHub infrastructure</code></pre>
+<h2 id="azure-infrastructure-commands">Azure Infrastructure Commands</h2>
+<pre class="just"><code>cs-tf-init           # Initialize Terraform for cluster deployment
+cs-tf-plan           # Plan cluster infrastructure changes
+cs-tf-apply          # Apply cluster infrastructure changes
+cs-tf-test           # Run cluster infrastructure tests
+cs-tf-destroy        # Destroy cluster infrastructure</code></pre>
+<h2 id="pipeline-commands">Pipeline Commands</h2>
+<pre class="just"><code>deploy               # Full deployment pipeline including:
+                    # - Azure login
+                    # - AKS credentials
+                    # - Docker build and push
+                    # - All K8s deployments
+                    # - NGINX ingress installation
+
+cleanup              # Delete resource group</code></pre>
+<h2 id="usage">Usage</h2>
+<ol type="1">
+<li>Setup environment variables in <code>.env</code> file</li>
+<li>Run individual commands with <code>just &lt;command&gt;</code></li>
+<li>Run full deployment with <code>just deploy</code></li>
+<li>Clean up resources with <code>just cleanup</code></li>
+</ol>
+<h2 id="notes">Notes</h2>
+<ul>
+<li>Requires Azure CLI, Docker, kubectl, and Terraform installed</li>
+<li>Uses Azure Container Registry at <code>devacrfcaks.azurecr.io</code></li>
+<li>Manages both GitHub and Azure cluster infrastructure</li>
+<li>All Terraform commands run from respective directories</li>
+<li>Supports automatic cleanup of resources</li>
+</ul>
