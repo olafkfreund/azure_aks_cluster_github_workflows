@@ -13,6 +13,7 @@
     "mysql80@latest",
     "minikube@latest",
     "nodejs@12.18.0",
+    "act@latest",
     "nodePackages.webpack@5.68.0",
     "nodePackages.webpack-cli@4.9.2"
   ],

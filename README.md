@@ -122,20 +122,6 @@ just cleanup
 
 ## Application Architecture
 
-### Backend (backend-deployment.yaml)
-
-- Spring Boot application
-- Runs on port 8080
-- Resource limits:
-  - Memory: 128Mi
-  - CPU: 500m
-
-### Frontend
-
-- React application
-- Served through NGINX
-- Communicates with backend through API endpoints
-
 ### Security
 
 - HTTPS enabled through cert-manager

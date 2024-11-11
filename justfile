@@ -16,20 +16,24 @@ aks-credentials:
 
 
 docker-build:
-    docker build -t {{registry}}/backend:latest ./apps/springboot/backend
-    docker build -t {{registry}}/frontend:latest ./apps/springboot/frontend
+    docker build -t {{registry}}/springboot:latest ./apps/springboot-org
+    docker build -t {{registry}}/springboot-mysql:latest ./apps/springboot-mysql
+    docker build -t {{registry}}/aspnet-core-dotnet-core:latest ./apps/dotnet/aspnet-core-dotnet-core
 
 docker-push:
     az acr login --name {{registry}}
-    docker push {{registry}}/backend:latest
-    docker push {{registry}}/frontend:latest
+    docker push {{registry}}/springboot:latest
+    docker push {{registry}}/springboot-mysql:latest
 
 
-k8s-deploy:
-    kubectl apply -f ./apps/springboot/backend/backend-deployment.yaml
-    kubectl apply -f ./apps/springboot/frontend/frontend-deployment.yaml
-    kubectl apply -f ./apps/dotnet/aspnet-core-dotnet-core/dotnet-deployment.yaml
-    kubectl apply -f ./apps/dotnet/aspnet-core-dotnet-core/ingress.yaml
+k8s-deploy-springboot:
+    kubectl apply -f ./apps/springboot-org/deployment.yml
+
+k8s-deploy-springboot-mysql:
+    kubectl apply -f ./apps/springboot-mysql/deployment.yml
+
+k8s-deploy-dotnet:
+    kubectl apply -f ./apps/dotnet/aspnet-core-dotnet-core/dotnet-deployment.yml
 
 
 install-nginx-ingress:
@@ -47,6 +51,9 @@ get-services:
 
 get-deployments:
     kubectl get deployments -A
+
+get-ingress:
+    kubectl get ingress -A
 
 #GitHub Deployment
 gh-tf-init:
@@ -81,7 +88,9 @@ cs-tf-destroy:
     cd ./cluster-deployment/ && terraform destroy -auto-approve
 
 
-deploy: login aks-credentials docker-build docker-push k8s-deploy
+deploy: login aks-credentials docker-build docker-push \
+    k8s-deploy-springboot k8s-deploy-springboot-mysql \
+    k8s-deploy-dotnet install-nginx-ingress
 
 
 cleanup:
