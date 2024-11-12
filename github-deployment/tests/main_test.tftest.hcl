@@ -29,9 +29,14 @@ run "resource_group_creation" {
     error_message = "TF state resource group name did not match expected value"
   }
 
+  # assert {
+  #   condition     = module.tf-resource-group.id != ""
+  #   error_message = "Resource group ID should not be empty"
+  # }
+
   assert {
-    condition     = module.identity-resource-group.name == var.identity_rg_name
-    error_message = "Identity resource group name did not match expected value"
+    condition     = module.tf-resource-group.location == var.location
+    error_message = "Resource group location does not match input"
   }
 }
 
